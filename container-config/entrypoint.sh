@@ -36,6 +36,5 @@ if ! grep -q "APP_KEY=" .env || [ -z "$(grep APP_KEY= .env | cut -d '=' -f2)" ];
 fi
 
 php artisan migrate --force
-php artisan db:seed --force
 
 exec "$@"

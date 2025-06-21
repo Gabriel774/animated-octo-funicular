@@ -2,4 +2,4 @@
 
 use Illuminate\Support\Facades\Route;
 
-Route::redirect('/', '/api/documentation');
+Route::redirect('', route('l5-swagger.default.api'));
