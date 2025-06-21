@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Services;
+namespace App\Services\Cart;
 
 use App\DTOs\CartItem;
 
@@ -9,7 +9,7 @@ class CartCalculator
 
     public function __construct(
         public array $items,
-        public array $modifiers = []
+        public array $priceModifiers = []
     ) {
     }
 
@@ -17,7 +17,7 @@ class CartCalculator
     {
         $itemsSum = $this->sumItemsPrice();
 
-        return $this->applyModifiers($itemsSum);
+        return $this->applyPriceModifiers($itemsSum);
     }
 
     private function sumItemsPrice(): float
@@ -29,7 +29,7 @@ class CartCalculator
             );
     }
 
-    protected function applyModifiers(float $value): float
+    protected function applyPriceModifiers(float $value): float
     {
         //@todo: implement
         return $value;
