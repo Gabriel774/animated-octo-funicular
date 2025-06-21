@@ -22,7 +22,6 @@ class DiscountModifierTest extends TestCase
         $this->assertEquals(970, $result);
     }
 
-
     public function test_discount_fixed_modifier_greater_than_price(): void
     {
         $result = (new DiscountModifier(30, DiscountType::FIXED))->apply(3);
