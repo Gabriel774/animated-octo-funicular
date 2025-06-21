@@ -3,6 +3,8 @@
 namespace Tests\Unit\Cart;
 
 use App\Services\Cart\CartCalculator;
+use App\Services\Cart\PriceModifiers\CompoundInterest\CompoundInterestModifier;
+use App\Services\Cart\PriceModifiers\Discount\DiscountModifier;
 use Tests\Factories\CartItemFactory;
 use Tests\TestCase;
 
@@ -21,7 +23,13 @@ class CartCalculatorTest extends TestCase
     {
         $items = $this->getDummyItems();
 
-        
+        $subTotal = (new CartCalculator(
+            $items,
+            [new DiscountModifier(10.5), new CompoundInterestModifier(1)],
+            ['installments' => 2]
+        ))->getSubTotal();
+
+        $this->assertEquals(156.41, $subTotal);
     }
 
     protected function getDummyItems(): array

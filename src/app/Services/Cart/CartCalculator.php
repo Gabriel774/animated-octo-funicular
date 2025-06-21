@@ -3,13 +3,15 @@
 namespace App\Services\Cart;
 
 use App\DTOs\CartItem;
+use App\Services\Cart\PriceModifiers\Contracts\PriceModifier;
 
 class CartCalculator
 {
 
     public function __construct(
         public array $items,
-        public array $priceModifiers = []
+        public array $priceModifiers = [],
+        public array $context = []
     ) {
     }
 
@@ -31,7 +33,9 @@ class CartCalculator
 
     protected function applyPriceModifiers(float $value): float
     {
-        //@todo: implement
-        return $value;
+        return collect($this->priceModifiers)->reduce(
+            fn(float $carry, PriceModifier $modifier) => $modifier->apply($carry, $this->context),
+            $value
+        );
     }
 }
