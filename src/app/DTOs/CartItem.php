@@ -10,4 +10,10 @@ class CartItem
         public int $quantity
     ) {
     }
+
+    public function getPrice(): float
+    {
+        // Rounding to avoid float calc issues.
+        return round($this->unitPrice * $this->quantity, 2);
+    }
 }
