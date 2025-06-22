@@ -3,6 +3,7 @@
 namespace Tests\Feature\Cart;
 
 use App\Enums\PaymentMethod;
+use Illuminate\Testing\TestResponse;
 use Tests\Factories\CartItemFactory;
 use Tests\TestCase;
 
@@ -12,12 +13,97 @@ class PurchaseTest extends TestCase
     {
         $payload = $this->getPayload(PaymentMethod::PIX);
 
-        $subTotal = $this->executeRequest($payload)['subTotal'];
+        $subTotal = $this->executeRequest($payload)->json()['subTotal'];
 
         $this->assertEquals(180, $subTotal);
     }
 
-    public function getPayload(PaymentMethod $method): array
+    public function test_credit_card_full_method(): void
+    {
+        $payload = $this->getPayload(PaymentMethod::CREDIT_CARD_FULL);
+
+        $subTotal = $this->executeRequest($payload)->json()['subTotal'];
+
+        $this->assertEquals(180, $subTotal);
+    }
+
+    public function test_credit_card_installment_method(): void
+    {
+        $payload = $this->getPayload(PaymentMethod::CREDIT_CARD_INSTALLMENT, 10);
+
+        $subTotal = $this->executeRequest($payload)->json()['subTotal'];
+
+        $this->assertEquals(220.9, $subTotal);
+    }
+
+    public function test_invalid_payment_method(): void
+    {
+        $payload = $this->getPayload(PaymentMethod::PIX);
+
+        $payload['paymentMethod'] = 'fiado';
+
+        $response = $this->executeRequest($payload);
+
+        $response->assertStatus(422);
+
+        $response->assertJsonValidationErrors(['paymentMethod']);
+    }
+
+    public function test_invalid_cart_item(): void
+    {
+        $payload = $this->getPayload(PaymentMethod::PIX);
+
+        $payload['items'] = [[]];
+
+        $response = $this->executeRequest($payload);
+
+        $response->assertStatus(422);
+
+        $response->assertJsonValidationErrors([
+            'items.0.name',
+            'items.0.unitPrice',
+            'items.0.quantity',
+        ]);
+    }
+
+
+    public function test_no_cart_item_error(): void
+    {
+        $payload = $this->getPayload(PaymentMethod::PIX);
+
+        $payload['items'] = null;
+
+        $response = $this->executeRequest($payload);
+
+        $response->assertStatus(422);
+
+        $response->assertJsonValidationErrors(['items']);
+    }
+
+    public function test_invalid_credit_card_data(): void
+    {
+        $payload = $this->getPayload(PaymentMethod::CREDIT_CARD_FULL);
+
+        $payload['creditCardData'] = [
+            'holderName' => 'a',
+            'cardNumber' => '2',
+            'expirationDate' => '1231-2029',
+            'securityCode' => '1'
+        ];
+
+        $response = $this->executeRequest($payload);
+
+        $response->assertStatus(422);
+
+        $response->assertJsonValidationErrors([
+            'creditCardData.holderName',
+            'creditCardData.cardNumber',
+            'creditCardData.expirationDate',
+            'creditCardData.securityCode',
+        ]);
+    }
+
+    public function getPayload(PaymentMethod $method, ?int $installments = null): array
     {
         $payload = [
             'items' => [
@@ -39,11 +125,15 @@ class PurchaseTest extends TestCase
             ];
         }
 
+        if ($installments) {
+            $payload['installments'] = $installments;
+        }
+
         return $payload;
     }
 
-    public function executeRequest(array $payload): array
+    public function executeRequest(array $payload): TestResponse
     {
-        return $this->postJson(route('api.cart.purchase'), $payload)->json();
+        return $this->postJson(route('api.cart.purchase'), $payload);
     }
 }
