@@ -23,7 +23,7 @@ Clone o repositório, acesse o diretório do projeto e execute o seguinte comand
 docker compose up -d --build
 ```
 
-Após subir o ambiente, a aplicação ficará acessível pelo endereço:
+Após subir o ambiente, a aplicação ficará acessível pelo endereço (se você se deparar com um erro, o nginx provavelmente ainda está iniciando):
 
 ```
 http://localhost:8000
