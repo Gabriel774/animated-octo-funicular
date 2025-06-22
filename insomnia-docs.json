@@ -28,7 +28,7 @@
       "parentId": "fld_cart_endpoints",
       "name": "Realizar Compra",
       "method": "POST",
-      "url": "http://localhost/api/cart/purchase",
+      "url": "http://localhost:8000/api/cart/purchase",
       "body": {
         "mimeType": "application/json",
         "text": "{\n  \"paymentMethod\": \"credit_card_full\",\n  \"items\": [\n    {\n      \"name\": \"Mouse Gamer\",\n      \"unitPrice\": 199.90,\n      \"quantity\": 2\n    }\n  ],\n  \"installments\": 10,\n  \"creditCardData\": {\n    \"holderName\": \"JOHN DOE\",\n    \"cardNumber\": \"7111111111111111\",\n    \"expirationDate\": \"07-2029\",\n    \"securityCode\": \"123\"\n  }\n}"
