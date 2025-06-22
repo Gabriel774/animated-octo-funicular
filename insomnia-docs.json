@@ -1,0 +1,96 @@
+{
+  "_type": "export",
+  "__export_format": 4,
+  "__export_date": "2024-06-22T19:00:00.000Z",
+  "__export_source": "insomnia.desktop.app:v2024.2.2",
+  "resources": [
+    {
+      "_id": "env_cart_base",
+      "_type": "environment",
+      "parentId": null,
+      "name": "Bussola social"
+    },
+    {
+      "_id": "wrk_cart_api",
+      "_type": "workspace",
+      "name": "API de Carrinho Bussola social",
+      "description": "# API de Carrinho\n\nEndpoints para gerenciamento de compras, suportando múltiplos métodos de pagamento.\n\n- `POST /cart/purchase`: Realiza uma compra utilizando Pix, cartão de crédito à vista ou parcelado."
+    },
+    {
+      "_id": "fld_cart_endpoints",
+      "_type": "request_group",
+      "parentId": "wrk_cart_api",
+      "name": "Carrinho"
+    },
+    {
+      "_id": "req_cart_purchase",
+      "_type": "request",
+      "parentId": "fld_cart_endpoints",
+      "name": "Realizar Compra",
+      "method": "POST",
+      "url": "http://localhost/api/cart/purchase",
+      "body": {
+        "mimeType": "application/json",
+        "text": "{\n  \"paymentMethod\": \"credit_card_full\",\n  \"items\": [\n    {\n      \"name\": \"Mouse Gamer\",\n      \"unitPrice\": 199.90,\n      \"quantity\": 2\n    }\n  ],\n  \"installments\": 10,\n  \"creditCardData\": {\n    \"holderName\": \"JOHN DOE\",\n    \"cardNumber\": \"7111111111111111\",\n    \"expirationDate\": \"07-2029\",\n    \"securityCode\": \"123\"\n  }\n}"
+      },
+      "headers": [
+        {
+          "name": "Accept",
+          "value": "application/json"
+        },
+        {
+          "name": "Content-Type",
+          "value": "application/json"
+        }
+      ],
+      "description": "### Endpoint de Compra\n\n`POST /cart/purchase`\n\nRealiza uma compra utilizando um dos métodos de pagamento disponíveis:\n\n- `pix` – Pagamento instantâneo via Pix\n- `credit_card_full` – Cartão de crédito (pagamento à vista)\n- `credit_card_installment` – Cartão de crédito (pagamento parcelado)\n\n#### **Campos do Body da Requisição**\n\n| Campo             | Tipo    | Obrigatório | Descrição                                                                 |\n|-------------------|---------|-------------|--------------------------------------------------------------------------|\n| paymentMethod     | string  | Sim         | Método de pagamento (`pix`, `credit_card_full`, `credit_card_installment`) |\n| items             | array   | Sim         | Lista de itens do carrinho (ver abaixo)                                   |\n| installments      | integer | Condicional | Obrigatório apenas para `credit_card_installment` (número de parcelas)    |\n| creditCardData    | object  | Condicional | Obrigatório para pagamentos com cartão (ver abaixo)                       |\n\n**Item do Carrinho**\n- `name` (string, obrigatório): Nome do produto\n- `unitPrice` (number, obrigatório): Preço unitário\n- `quantity` (integer, obrigatório): Quantidade\n\n**Dados do Cartão de Crédito**\n- `holderName` (string, obrigatório): Nome do titular\n- `cardNumber` (string, obrigatório): Número do cartão (13 a 19 dígitos)\n- `expirationDate` (string, obrigatório): Data de expiração no formato `MM-YYYY`\n- `securityCode` (string, obrigatório): Código de segurança (3 ou 4 dígitos)\n\n---\n\n#### **Exemplos de Requisição**\n\n**Pix:**\n```json\n{\n  \"paymentMethod\": \"pix\",\n  \"items\": [\n    { \"name\": \"Mouse Gamer\", \"unitPrice\": 199.90, \"quantity\": 1 }\n  ]\n}\n```\n\n**Cartão de Crédito à Vista:**\n```json\n{\n  \"paymentMethod\": \"credit_card_full\",\n  \"items\": [\n    { \"name\": \"Mouse Gamer\", \"unitPrice\": 199.90, \"quantity\": 2 }\n  ],\n  \"creditCardData\": {\n    \"holderName\": \"JOHN DOE\",\n    \"cardNumber\": \"7111111111111111\",\n    \"expirationDate\": \"07-2029\",\n    \"securityCode\": \"123\"\n  }\n}\n```\n\n**Cartão de Crédito Parcelado:**\n```json\n{\n  \"paymentMethod\": \"credit_card_installment\",\n  \"items\": [\n    { \"name\": \"Teclado\", \"unitPrice\": 100.00, \"quantity\": 3 }\n  ],\n  \"installments\": 6,\n  \"creditCardData\": {\n    \"holderName\": \"MARIA SILVA\",\n    \"cardNumber\": \"5555555555554444\",\n    \"expirationDate\": \"12-2027\",\n    \"securityCode\": \"987\"\n  }\n}\n```\n\n---\n\n#### **Respostas**\n\n- **200 OK**: Sucesso\n    - Exemplo: `{ \"subTotal\": 220.90 }`\n- **422 Unprocessable Entity**: Erro de validação (ver exemplos)\n\n---\n\n> Utilize o campo correto conforme o método de pagamento escolhido.\n\n#### **Autenticação**\n\nSe a API exigir autenticação, adicione o token necessário no cabeçalho em `Headers`.",
+      "responses": [
+        {
+          "_id": "resp_purchase_success",
+          "parentId": "req_cart_purchase",
+          "_type": "response",
+          "statusCode": 200,
+          "statusMessage": "OK",
+          "body": "{\n  \"subTotal\": 220.90\n}",
+          "contentType": "application/json",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "_id": "resp_purchase_422",
+          "parentId": "req_cart_purchase",
+          "_type": "response",
+          "statusCode": 422,
+          "statusMessage": "Unprocessable Entity",
+          "body": "{\n  \"message\": \"Erro de validação\",\n  \"errors\": {\n    \"creditCardData\": [\"O campo creditCardData é obrigatório.\"],\n    \"installments\": [\"O campo installments é obrigatório quando o método de pagamento é credit_card_installment.\"]\n  }\n}",
+          "contentType": "application/json",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        },
+        {
+          "_id": "resp_purchase_invalid_card",
+          "parentId": "req_cart_purchase",
+          "_type": "response",
+          "statusCode": 422,
+          "statusMessage": "Unprocessable Entity",
+          "body": "{\n  \"message\": \"Erro de validação\",\n  \"errors\": {\n    \"creditCardData.cardNumber\": [\"O número do cartão deve ser válido.\"]\n  }\n}",
+          "contentType": "application/json",
+          "headers": [
+            {
+              "name": "Content-Type",
+              "value": "application/json"
+            }
+          ]
+        }
+      ]
+    }
+  ]
+}
