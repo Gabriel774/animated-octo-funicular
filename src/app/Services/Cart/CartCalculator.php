@@ -7,7 +7,11 @@ use App\Services\Cart\PriceModifiers\Contracts\PriceModifier;
 
 class CartCalculator
 {
-
+    /**
+     * @param CartItem[] $items
+     * @param PriceModifier[] $priceModifiers
+     * @param array $context
+     */
     public function __construct(
         public array $items,
         public array $priceModifiers = [],
