@@ -13,7 +13,7 @@ class PurchaseRequest extends FormRequest
     {
         $creditCardFullEnumValue = PaymentMethod::CREDIT_CARD_FULL->value;
         $creditCardInstallmentEnumValue = PaymentMethod::CREDIT_CARD_INSTALLMENT->value;
-        $requiredIfCreditCard = "required_if:payment_method,{$creditCardFullEnumValue},{$creditCardInstallmentEnumValue}";
+        $requiredIfCreditCard = "required_if:paymentMethod,{$creditCardFullEnumValue},{$creditCardInstallmentEnumValue}";
 
         return [
             'paymentMethod' => ['required', new Enum(PaymentMethod::class)],
@@ -21,12 +21,12 @@ class PurchaseRequest extends FormRequest
             'items.*.name' => ['required', 'string'],
             'items.*.unitPrice' => ['required', 'numeric'],
             'items.*.quantity' => ['required', 'integer', 'min:1'],
-            'installments' => [$requiredIfCreditCard, 'integer'],
+            'installments' => ["required_if:paymentMethod,{$creditCardInstallmentEnumValue}", 'integer'],
             'creditCardData' => ['array', $requiredIfCreditCard],
-            'creditCardData.holderName' => [$requiredIfCreditCard, 'string'],
-            'creditCardData.cardNumber' => [$requiredIfCreditCard, 'string'],
-            'creditCardData.expirationDate' => [$requiredIfCreditCard, 'string'],
-            'creditCardData.securityCode' => [$requiredIfCreditCard, 'string'],
+            'creditCardData.holderName' => [$requiredIfCreditCard, 'string', 'min:3', 'max:50', 'regex:/^[\pL\s\-\'\.]+$/u'],
+            'creditCardData.cardNumber' => [$requiredIfCreditCard, 'string', 'regex:/^(?:\d{13,19})$/'],
+            'creditCardData.expirationDate' => [$requiredIfCreditCard, 'string', 'date_format:m-Y'],
+            'creditCardData.securityCode' => [$requiredIfCreditCard, 'string', 'regex:/^\d{3,4}$/'],
         ];
     }
 
