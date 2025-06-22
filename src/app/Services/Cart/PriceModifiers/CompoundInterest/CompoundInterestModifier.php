@@ -21,6 +21,12 @@ class CompoundInterestModifier implements PriceModifier
 
         $rate = $this->interestPercentage / 100;
 
-        return round($price * pow(1 + $rate, $installments), 2);
+        $total = $price;
+
+        for ($i = 0; $i < $installments; $i++) {
+            $total = truncateFloat($total * (1 + $rate), 2);
+        }
+
+        return $total;
     }
 }

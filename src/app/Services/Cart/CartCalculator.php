@@ -26,7 +26,7 @@ class CartCalculator
     {
         return collect($this->items)
             ->reduce(
-                fn(float $carry, CartItem $item): float => round($item->getPrice() + $carry, 2),
+                fn(float $carry, CartItem $item): float => truncateFloat($item->getPrice() + $carry),
                 0
             );
     }

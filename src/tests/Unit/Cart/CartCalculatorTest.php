@@ -29,7 +29,7 @@ class CartCalculatorTest extends TestCase
             ['installments' => 2]
         ))->getSubTotal();
 
-        $this->assertEquals(156.41, $subTotal);
+        $this->assertEquals(156.4, $subTotal);
     }
 
     protected function getDummyItems(): array
